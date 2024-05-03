@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaming Platform Poll</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Vote for your favorite gaming platform</h1>
+    <form id="pollForm">
+      <label>
+        <input type="radio" name="platform" value="pc">
+        PC
+      </label>
+      <label>
+        <input type="radio" name="platform" value="playstation">
+        PlayStation
+      </label>
+      <label>
+        <input type="radio" name="platform" value="xbox">
+        Xbox
+      </label>
+      <label>
+        <input type="radio" name="platform" value="nintendo">
+        Nintendo
+      </label>
+      <button type="submit">Vote</button>
+    </form>
+    <div id="results">
+      <h2>Results</h2>
+      <ul id="voteCounts">
+        <li>PC: <span id="pcVotes">0</span></li>
+        <li>PlayStation: <span id="playstationVotes">0</span></li>
+        <li>Xbox: <span id="xboxVotes">0</span></li>
+        <li>Nintendo: <span id="nintendoVotes">0</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

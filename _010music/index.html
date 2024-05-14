@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phonk Beats Player</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Phonk Beats Player</h1>
+    <audio id="audio" controls>
+      <source src="your-phonk-beat.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <div class="controls">
+      <button id="playPause">Play</button>
+      <button id="stop">Stop</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music Beat Visualization</title>
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  #container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  #image {
+    max-width: 100%;
+    max-height: 80vh;
+    transform-origin: center bottom;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <img id="image" src="../_010music/lollipop-chainsaw-artboo.avif" alt="Music Wave Image">
+</div>
+
+<script>
+  // Web Audio API setup
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const audioElement = new Audio('your_music_file.mp3');
+  const audioSource = audioContext.createMediaElementSource(audioElement);
+  const analyser = audioContext.createAnalyser();
+  analyser.fftSize = 256;
+  audioSource.connect(analyser);
+  analyser.connect(audioContext.destination);
+
+  // Load music and start playing
+  audioElement.addEventListener('canplay', function() {
+    audioElement.play();
+  });
+
+  // Animation loop
+  function animate() {
+    // Get beat level from the analyser data
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyser.getByteFrequencyData(dataArray);
+    const beatLevel = dataArray.reduce((acc, val) => acc + val, 0) / bufferLength;
+
+    // Adjust wave amplitude based on beat level
+    const amplitude = 10 + beatLevel / 20; // Change this multiplier for different amplitudes
+
+    // Update image transform
+    const image = document.getElementById('image');
+    image.style.transform = `rotate(${amplitude * Math.sin(Date.now() / 200)}deg)`;
+
+    // Repeat animation
+    requestAnimationFrame(animate);
+  }
+
+  // Start animation loop
+  animate();
+</script>
+</body>
+</html>

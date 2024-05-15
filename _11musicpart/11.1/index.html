@@ -266,28 +266,23 @@ window.onload = function() {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Audio Visualizer</title>
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: #000;
+.music-viz {
+    height: 600px;
+    width: 100%;
+    background-color: #1fdf64;
+    position: relative;
 }
-#info {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  padding: 20px;
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 </style>
 </head>
 <body>
-    <div id="content">
+    <div class="music-viz">
         <input type="file" id="thefile" accept="audio/*" />
-        <canvas id="canvas"></canvas>
-        <img id="image" src="lollipop-chainsaw-artboo.avif" style="display: none;"> <!-- Add your circular image here -->
         <audio id="audio" controls></audio>
     </div>
 
@@ -295,7 +290,6 @@ html, body {
 window.onload = function() {
     var file = document.getElementById("thefile");
     var audio = document.getElementById("audio");
-    var image = document.getElementById("image");
 
     file.onchange = function() {
         var files = this.files;
@@ -306,9 +300,12 @@ window.onload = function() {
         var src = context.createMediaElementSource(audio);
         var analyser = context.createAnalyser();
 
-        var canvas = document.getElementById("canvas");
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        var canvas = document.createElement("canvas");
+        canvas.id = "canvas";
+        document.querySelector('.music-viz').appendChild(canvas);
+
+        canvas.width = document.querySelector('.music-viz').clientWidth;
+        canvas.height = document.querySelector('.music-viz').clientHeight;
         var ctx = canvas.getContext("2d");
 
         src.connect(analyser);
@@ -334,23 +331,8 @@ window.onload = function() {
 
             analyser.getByteFrequencyData(dataArray);
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw circular image
-            var imgRadius = Math.min(image.width, image.height) / 2;
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, imgRadius, 0, Math.PI * 2);
-            ctx.clip();
-            ctx.drawImage(image, centerX - imgRadius, centerY - imgRadius, imgRadius * 2, imgRadius * 2);
-            ctx.restore();
-
-            // Draw border
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, imgRadius, 0, Math.PI * 2);
-            ctx.stroke();
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             var sliceWidth = (Math.PI * 2) / bufferLength;
             var angle = 0;
@@ -420,3 +402,4 @@ window.onload = function() {
 </script>
 </body>
 </html>
+

@@ -1,0 +1,422 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audio Visualizer</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+#info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+    <div id="content">
+        <input type="file" id="thefile" accept="audio/*" />
+        <canvas id="canvas"></canvas>
+        <audio id="audio" controls></audio>
+    </div>
+
+<script>
+window.onload = function() {
+    var file = document.getElementById("thefile");
+    var audio = document.getElementById("audio");
+
+    file.onchange = function() {
+        var files = this.files;
+        audio.src = URL.createObjectURL(files[0]);
+        audio.load();
+        audio.play();
+        var context = new AudioContext();
+        var src = context.createMediaElementSource(audio);
+        var analyser = context.createAnalyser();
+
+        var canvas = document.getElementById("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext("2d");
+
+        src.connect(analyser);
+        analyser.connect(context.destination);
+
+        analyser.fftSize = 256;
+
+        var bufferLength = analyser.frequencyBinCount;
+        console.log(bufferLength);
+
+        var dataArray = new Uint8Array(bufferLength);
+
+        var centerX = canvas.width / 2;
+        var centerY = canvas.height / 2;
+        var maxRadius = Math.min(centerX, centerY) * 0.9;
+
+        function renderFrame() {
+            requestAnimationFrame(renderFrame);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            var sliceWidth = (Math.PI * 2) / bufferLength;
+            var angle = 0;
+
+            for (var i = 0; i < bufferLength; i++) {
+                var barHeight = dataArray[i] * 2;
+
+                var x = centerX + Math.cos(angle) * (maxRadius - barHeight * 0.5);
+                var y = centerY + Math.sin(angle) * (maxRadius - barHeight * 0.5);
+
+                ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                angle += sliceWidth;
+            }
+
+            // Scatter dots
+            var dotRadius = 2;
+            var dotStep = Math.floor(bufferLength / 50); // Adjust the number of dots by changing the denominator
+
+            for (var i = 0; i < bufferLength; i += dotStep) {
+                var dotX = centerX + Math.cos(i) * maxRadius * (dataArray[i] / 255);
+                var dotY = centerY + Math.sin(i) * maxRadius * (dataArray[i] / 255);
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                ctx.beginPath();
+                ctx.arc(dotX, dotY, dotRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        audio.play();
+        renderFrame();
+    };
+};
+</script>
+</body>
+</html> -->
+
+
+
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audio Visualizer</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+#info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+    <div id="content">
+        <input type="file" id="thefile" accept="audio/*" />
+        <canvas id="canvas"></canvas>
+        <audio id="audio" controls></audio>
+    </div>
+
+<script>
+window.onload = function() {
+    var file = document.getElementById("thefile");
+    var audio = document.getElementById("audio");
+
+    file.onchange = function() {
+        var files = this.files;
+        audio.src = URL.createObjectURL(files[0]);
+        audio.load();
+        audio.play();
+        var context = new AudioContext();
+        var src = context.createMediaElementSource(audio);
+        var analyser = context.createAnalyser();
+
+        var canvas = document.getElementById("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext("2d");
+
+        src.connect(analyser);
+        analyser.connect(context.destination);
+
+        analyser.fftSize = 256;
+
+        var bufferLength = analyser.frequencyBinCount;
+        console.log(bufferLength);
+
+        var dataArray = new Uint8Array(bufferLength);
+
+        var centerX = canvas.width / 2;
+        var centerY = canvas.height / 2;
+        var maxRadius = Math.min(centerX, centerY) * 0.9;
+
+        var borderCount = 13;
+        var dotSizes = [6, 5, 4, 3, 2, 1]; // Dot sizes for each border
+        var dotDensity = [4, 8, 12, 16, 20, 24]; // Number of dots for each border
+
+        function renderFrame() {
+            requestAnimationFrame(renderFrame);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            var sliceWidth = (Math.PI * 2) / bufferLength;
+            var angle = 0;
+
+            for (var i = 0; i < bufferLength; i++) {
+                var barHeight = dataArray[i] * 2;
+
+                var x = centerX + Math.cos(angle) * (maxRadius - barHeight * 0.5);
+                var y = centerY + Math.sin(angle) * (maxRadius - barHeight * 0.5);
+
+                ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                angle += sliceWidth;
+            }
+
+            // Scatter dots
+            for (var b = 0; b < borderCount; b++) {
+                var borderRadius = maxRadius * (borderCount - b) / borderCount;
+                var dotRadius = dotSizes[b];
+
+                for (var i = 0; i < dotDensity[b]; i++) {
+                    var dotAngle = (Math.PI * 2) * (i / dotDensity[b]);
+                    var dotX = centerX + Math.cos(dotAngle) * borderRadius * (dataArray[i % bufferLength] / 255);
+                    var dotY = centerY + Math.sin(dotAngle) * borderRadius * (dataArray[i % bufferLength] / 255);
+                    var dotColor = "rgba(0, 0, 255, " + (1 - dotRadius / 6) + ")"; // Adjust dot color based on size
+
+                    ctx.fillStyle = dotColor;
+                    ctx.beginPath();
+                    ctx.arc(dotX, dotY, dotRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Scattered white dots dancing in three spiral waveform patterns originating from the same origin
+            for (var i = 0; i < bufferLength; i += 10) {
+                var spiralAngle1 = i * 0.1;
+                var spiralAngle2 = i * 0.1 + Math.PI / 3;
+                var spiralAngle3 = i * 0.1 + (2 * Math.PI) / 3;
+
+                var spiralRadius = maxRadius * (dataArray[i % bufferLength] / 255);
+
+                var whiteDotX1 = centerX + Math.cos(spiralAngle1) * spiralRadius;
+                var whiteDotY1 = centerY + Math.sin(spiralAngle1) * spiralRadius;
+
+                var whiteDotX2 = centerX + Math.cos(spiralAngle2) * spiralRadius;
+                var whiteDotY2 = centerY + Math.sin(spiralAngle2) * spiralRadius;
+
+                var whiteDotX3 = centerX + Math.cos(spiralAngle3) * spiralRadius;
+                var whiteDotY3 = centerY + Math.sin(spiralAngle3) * spiralRadius;
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                ctx.beginPath();
+                ctx.arc(whiteDotX1, whiteDotY1, 2, 0, Math.PI * 2);
+                ctx.arc(whiteDotX2, whiteDotY2, 2, 0, Math.PI * 2);
+                ctx.arc(whiteDotX3, whiteDotY3, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        audio.play();
+        renderFrame();
+    };
+};
+</script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audio Visualizer</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+#info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  padding: 20px;
+}
+</style>
+</head>
+<body>
+    <div id="content">
+        <input type="file" id="thefile" accept="audio/*" />
+        <canvas id="canvas"></canvas>
+        <img id="image" src="lollipop-chainsaw-artboo.avif" style="display: none;"> <!-- Add your circular image here -->
+        <audio id="audio" controls></audio>
+    </div>
+
+<script>
+window.onload = function() {
+    var file = document.getElementById("thefile");
+    var audio = document.getElementById("audio");
+    var image = document.getElementById("image");
+
+    file.onchange = function() {
+        var files = this.files;
+        audio.src = URL.createObjectURL(files[0]);
+        audio.load();
+        audio.play();
+        var context = new AudioContext();
+        var src = context.createMediaElementSource(audio);
+        var analyser = context.createAnalyser();
+
+        var canvas = document.getElementById("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        var ctx = canvas.getContext("2d");
+
+        src.connect(analyser);
+        analyser.connect(context.destination);
+
+        analyser.fftSize = 256;
+
+        var bufferLength = analyser.frequencyBinCount;
+        console.log(bufferLength);
+
+        var dataArray = new Uint8Array(bufferLength);
+
+        var centerX = canvas.width / 2;
+        var centerY = canvas.height / 2;
+        var maxRadius = Math.min(centerX, centerY) * 0.9;
+
+        var borderCount = 13;
+        var dotSizes = [6, 5, 4, 3, 2, 1]; // Dot sizes for each border
+        var dotDensity = [4, 8, 12, 16, 20, 24]; // Number of dots for each border
+
+        function renderFrame() {
+            requestAnimationFrame(renderFrame);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw circular image
+            var imgRadius = Math.min(image.width, image.height) / 2;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, imgRadius, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(image, centerX - imgRadius, centerY - imgRadius, imgRadius * 2, imgRadius * 2);
+            ctx.restore();
+
+            // Draw border
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, imgRadius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            var sliceWidth = (Math.PI * 2) / bufferLength;
+            var angle = 0;
+
+            for (var i = 0; i < bufferLength; i++) {
+                var barHeight = dataArray[i] * 2;
+
+                var x = centerX + Math.cos(angle) * (maxRadius - barHeight * 0.5);
+                var y = centerY + Math.sin(angle) * (maxRadius - barHeight * 0.5);
+
+                ctx.fillStyle = "rgba(0, 0, 255, 0.5)";
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                angle += sliceWidth;
+            }
+
+            // Scatter dots
+            for (var b = 0; b < borderCount; b++) {
+                var borderRadius = maxRadius * (borderCount - b) / borderCount;
+                var dotRadius = dotSizes[b];
+
+                for (var i = 0; i < dotDensity[b]; i++) {
+                    var dotAngle = (Math.PI * 2) * (i / dotDensity[b]);
+                    var dotX = centerX + Math.cos(dotAngle) * borderRadius * (dataArray[i % bufferLength] / 255);
+                    var dotY = centerY + Math.sin(dotAngle) * borderRadius * (dataArray[i % bufferLength] / 255);
+                    var dotColor = "rgba(0, 0, 255, " + (1 - dotRadius / 6) + ")"; // Adjust dot color based on size
+
+                    ctx.fillStyle = dotColor;
+                    ctx.beginPath();
+                    ctx.arc(dotX, dotY, dotRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Scattered white dots dancing in three spiral waveform patterns originating from the same origin
+            for (var i = 0; i < bufferLength; i += 10) {
+                var spiralAngle1 = i * 0.1;
+                var spiralAngle2 = i * 0.1 + Math.PI / 3;
+                var spiralAngle3 = i * 0.1 + (2 * Math.PI) / 3;
+
+                var spiralRadius = maxRadius * (dataArray[i % bufferLength] / 255);
+
+                var whiteDotX1 = centerX + Math.cos(spiralAngle1) * spiralRadius;
+                var whiteDotY1 = centerY + Math.sin(spiralAngle1) * spiralRadius;
+
+                var whiteDotX2 = centerX + Math.cos(spiralAngle2) * spiralRadius;
+                var whiteDotY2 = centerY + Math.sin(spiralAngle2) * spiralRadius;
+
+                var whiteDotX3 = centerX + Math.cos(spiralAngle3) * spiralRadius;
+                var whiteDotY3 = centerY + Math.sin(spiralAngle3) * spiralRadius;
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+                ctx.beginPath();
+                ctx.arc(whiteDotX1, whiteDotY1, 2, 0, Math.PI * 2);
+                ctx.arc(whiteDotX2, whiteDotY2, 2, 0, Math.PI * 2);
+                ctx.arc(whiteDotX3, whiteDotY3, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        audio.play();
+        renderFrame();
+    };
+};
+</script>
+</body>
+</html>
